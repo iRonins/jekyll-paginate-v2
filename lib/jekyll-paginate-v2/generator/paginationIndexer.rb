@@ -1,7 +1,9 @@
+require 'ostruct'
+
 module Jekyll
   module PaginateV2::Generator
 
-    # 
+    #
     # Performs indexing of the posts or collection documents
     # as well as filtering said collections when requested by the defined filters.
     class PaginationIndexer
@@ -18,17 +20,17 @@ module Jekyll
           next if post.data[index_key].nil?
           next if post.data[index_key].size <= 0
           next if post.data[index_key].to_s.strip.length == 0
-          
+
           # Only tags and categories come as premade arrays, locale does not, so convert any data
           # elements that are strings into arrays
           post_data = post.data[index_key]
           if post_data.is_a?(String)
             post_data = post_data.split(/;|,|\s/)
           end
-          
+
           post_data.each do |key|
             key = key.to_s.downcase.strip
-            # If the key is a delimetered list of values 
+            # If the key is a delimetered list of values
             # (meaning the user didn't use an array but a string with commas)
             key.split(/;|,/).each do |k_split|
               k_split = k_split.to_s.downcase.strip #Clean whitespace and junk
@@ -41,7 +43,7 @@ module Jekyll
         end
         return index
       end # function index_posts_by
-      
+
       #
       # Creates an intersection (only returns common elements)
       # between multiple arrays
@@ -49,7 +51,7 @@ module Jekyll
       def self.intersect_arrays(first, *rest)
         return nil if first.nil?
         return nil if rest.nil?
-        
+
         intersect = first
         rest.each do |item|
           return [] if item.nil?
@@ -57,10 +59,25 @@ module Jekyll
         end
         return intersect
       end #function intersect_arrays
-      
+
+      # Query posts based on arbitrary conditions
+      # Returns only posts that match the query
+      def self.read_config_value_and_query_posts(config, config_key, posts)
+        return nil if posts.nil?
+        return posts if config.nil?
+        return posts if !config.has_key?(config_key)
+        return posts if config[config_key].nil?
+
+        query = config[config_key]
+
+        posts.select do |post|
+          OpenStruct.new(post.data).instance_eval(query)
+        end
+      end
+
       #
-      # Filters posts based on a keyed source_posts hash of indexed posts and performs a intersection of 
-      # the two sets. Returns only posts that are common between all collections 
+      # Filters posts based on a keyed source_posts hash of indexed posts and performs a intersection of
+      # the two sets. Returns only posts that are common between all collections
       #
       def self.read_config_value_and_filter_posts(config, config_key, posts, source_posts)
         return nil if posts.nil?
@@ -68,22 +85,22 @@ module Jekyll
         return posts if config.nil?
         return posts if !config.has_key?(config_key)
         return posts if config[config_key].nil?
-        
+
         # Get the filter values from the config (this is the cat/tag/locale values that should be filtered on)
         config_value = config[config_key]
-        
+
         # If we're dealing with a delimitered string instead of an array then let's be forgiving
         if( config_value.is_a?(String))
           config_value = config_value.split(/;|,/)
         end
-          
+
         # Now for all filter values for the config key, let's remove all items from the posts that
         # aren't common for all collections that the user wants to filter on
         config_value.each do |key|
           key = key.to_s.downcase.strip
           posts = PaginationIndexer.intersect_arrays(posts, source_posts[key])
         end
-        
+
         # The fully filtered final post list
         return posts
       end #function read_config_value_and_filter_posts

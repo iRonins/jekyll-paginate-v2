@@ -17,17 +17,17 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Pagination Generator for Jekyll 3}
   spec.description   = %q{An enhanced zero-configuration in-place replacement for the now decomissioned built-in jekyll-paginate gem. This pagination gem offers full backwards compatability as well as a slew of new frequently requested features with minimal additional site and page configuration. Optional features include auto-generation of paginated collection, tag and category pages.}
-  
+
   spec.files          = Dir['CODE_OF_CONDUCT.md', 'README*.md', 'LICENSE', 'Rakefile', '*.gemspec', 'Gemfile', 'lib/**/*', 'spec/**/*']
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
   # Gem requires Jekyll to work
   # ~> is the pessimistic operator and is equivalent to '>= 3.0', '< 4.0'
-  spec.add_runtime_dependency "jekyll", "~> 3.0"
+  spec.add_runtime_dependency "jekyll", ">= 3.0", "< 5.0"
 
   # Development requires more
-  spec.add_development_dependency "bundler", "~> 1.5"
+  spec.add_development_dependency "bundler", "~> 1.17"
   spec.add_development_dependency "rake", "~> 10.4"
   spec.add_development_dependency "minitest", '~> 5.4'
 end
