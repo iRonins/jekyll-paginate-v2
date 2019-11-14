@@ -8,12 +8,12 @@ module Jekyll::PaginateV2::Generator
         PaginationIndexer.read_config_value_and_query_posts(config, "query", posts)
       end
 
-      let(:config) { Hash["query" => "featured == true"] }
+      let(:config) { Hash["query" => "featured && popularity > 3"] }
       let(:posts) do
         [
-          create_post({ "id" => 1, "featured" => true }),
-          create_post({ "id" => 2, "featured" => true }),
-          create_post({ "id" => 3, "featured" => false }),
+          create_post({ "id" => 1, "featured" => true, popularity: 1 }),
+          create_post({ "id" => 2, "featured" => true, popularity: 5 }),
+          create_post({ "id" => 3, "featured" => false, popularity: 5 }),
         ]
       end
 
@@ -22,7 +22,7 @@ module Jekyll::PaginateV2::Generator
       end
 
       it "filters posts by query" do
-        _(subject).must_equal posts[0...-1]
+        _(subject).must_equal Array(posts[1])
       end
 
       describe "when posts are nil" do

@@ -75,6 +75,9 @@ pagination:
   # Optional, sorts the posts in reverse order (omit to default decending or sort_reverse: true)
   sort_reverse: true
 
+  # Optional, advanced query for collection based on its metadata. Support Ruby expressions
+  query: ''
+
   # Optional, the default category to use, omit or just leave this as 'posts' to get a backwards-compatible behavior (all posts)
   category: 'posts'
 
@@ -249,6 +252,27 @@ pagination:
 ## Paginate categories, tags, locales
 
 Enabling pagination for specific categories, tags or locales is as simple as adding values to the pagination page front-matter and corresponding values in the posts.
+
+### Query filtering
+
+Filter collection by arbitrary query
+
+``` yml
+---
+layout: post
+pagination: 
+  featured: true
+  popularity: 11
+---
+```
+
+Filter by document metadata
+
+```yml
+pagination: 
+  enabled: true
+  query: 'popularity > 10 && featured'
+```
 
 ### Filtering categories
 
